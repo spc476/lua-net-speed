@@ -32,6 +32,7 @@ typedef union sockaddr_all
 /*************************************************************************/
 
 static volatile sig_atomic_t g_sigalrm;
+static char                  g_buffer[1024uL * 1024uL];
 
 /*************************************************************************/
 
@@ -50,15 +51,26 @@ int main(int argc,char *argv[])
   int               port;
   int               sock;
   size_t            size;
-  char             *buffer;
+  size_t            idx = 0;
   unsigned long     packet_count = 0;
   int               c;
+  FILE             *rnd;
   
   if (argc == 1)
   {
     fprintf(stderr,"usage: %s -a addr -p port -t time -s size [-h]\n",argv[0]);
     return EXIT_FAILURE;
   }
+  
+  rnd = fopen("/dev/urandom","rb");
+  if (rnd == NULL)
+  {
+    perror("/dev/urandom");
+    return EXIT_FAILURE;
+  }
+  
+  fread(g_buffer,1,sizeof(g_buffer),rnd);
+  fclose(rnd);
   
   while((c = getopt(argc,argv,"a:p:t:s:h")) != EOF)
   {
@@ -96,12 +108,6 @@ int main(int argc,char *argv[])
       
       case 's':
            size = strtoul(optarg,NULL,10);
-           buffer = malloc(size);
-           if (buffer == NULL)
-           {
-             perror("malloc()");
-             return EXIT_FAILURE;
-           }
            break;
            
       case 'h':
@@ -140,10 +146,16 @@ int main(int argc,char *argv[])
   
   while(g_sigalrm == 0)
   {
-    if (sendto(sock,buffer,size,0,&addr.sa,alen) < 0)
+    if (sendto(sock,&g_buffer[idx],size,0,&addr.sa,alen) < 0)
       perror("sendto()");
     else
+    {
+      idx++;
+      if (idx + size > sizeof(g_buffer))
+        idx = 0;
+      
       packet_count ++;
+    }
   }
   
   signal(SIGALRM,SIG_DFL);
