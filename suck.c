@@ -174,6 +174,8 @@ int main(int argc,char *argv[])
   
   signal(SIGINT,SIG_DFL);
   printf("%lu\n",packet_count);
+  printf("%d\n",lua_gc(L,LUA_GCCOUNT,0));
+  lua_close(L);
   return EXIT_SUCCESS;
 }
 
