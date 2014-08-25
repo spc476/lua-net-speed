@@ -58,10 +58,11 @@ signal.catch('int',function()
   os.exit(0)
 end)
 
-data = buffer.new()
+local data = buffer.new()
+local remote,err
 
 while true do
-  local remote,err = sock:recvb(data)
+  remote,err = sock:recvb(data)
   if err ~= 0 then
     io.stderr:write("sock:recv(): ",errno[err])
   else
