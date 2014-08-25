@@ -3,7 +3,7 @@
 errno  = require "org.conman.errno"
 signal = require "org.conman.signal-ansi"
 getopt = require "org.conman.getopt"
-net    = require "org.conman.net"
+net    = require "net"
 
 OPTS = 
 {
