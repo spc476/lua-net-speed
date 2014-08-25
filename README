@@ -1,0 +1,54 @@
+
+Code to test whether or not a buffer data type is faster or slower than
+using immutable strings in Lua.  The usecase is receiving data from a
+network socket.  Any conclusions are up to the end user.
+
+FILES:
+
+	blast.c
+		A C program to blast packets of a fixed size (set at the
+		command line) containing random data (a worse case for Lua's
+		immutable strings) as fast as possible for a fixed amount
+		of time (set at the command line).  When done, it will print
+		the number of packets sent.
+
+	buffer.c
+		A simple Lua module providing a buffer userdata.  There is
+		just enough implemented to be useful for the code here.
+
+	net.c
+		A copy of org.conman.net Lua networking API, but with one
+		additional routine to receive data into the buffer userdata.
+
+	simple.lua
+		A simple lua script that does nothing with a packet of data.
+		This exists just to measure the overhead of receiving data
+		via C vs. Lua (see suck.c and suck.lua)
+
+	something.lua
+		A slightly more complex Lua script that goes through the
+		packet of data given it, simulating the parsing of the data.
+		This exists just to give Lua something to do with each
+		packet and to represent some form of processing.
+
+	suck.c
+		A C program to receive packets from blast.c, and pass
+		the data to a Lua function (see simple.lua and
+		something.lua).  This code passes the data as a Lua string
+		(immutable).  This exists to give the overhead of converting
+		data to a string and calling Lua.
+
+	suck.lua
+		A Lua program to receive packets from blast.c, and pass
+		the data to a Lua function (see simple.lua and
+		something.lua).  This code is all in Lua (except for the
+		actual sock:recv() function, which is in C---see net.c)
+		so we can measure the complete overhead of using immutable
+		strings.
+
+	suckb.lua
+		The same as above, except it uses the buffer module and thus
+		avoiding Lua's immutable strings.  This calls sock:recvb()
+		which takes a buffer userdata.
+
+
