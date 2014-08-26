@@ -87,7 +87,7 @@ static int buffermeta_byte(lua_State *L)
 static int bufferlua_new(lua_State *L)
 {
   size_t len     = luaL_optinteger(L,1,1500);
-  buffer__s *buf = lua_newuserdata(L,sizeof(buffer__s) + len);
+  buffer__s *buf = lua_newuserdata(L,sizeof(buffer__s));
   
   buf->len = len;
   buf->idx = 0;
