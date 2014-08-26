@@ -31,11 +31,11 @@ all : blast suck buffer.so net.so
 clean :
 	$(RM) -r *~ blast suck *.so
 
-blast :
-suck :
-buffer.so : buffer.c
+%.so : %.c
 	$(CC) $(CFLAGS) -shared -fPIC -o $@ $<
 
-net.so : net.c
-	$(CC) $(CFLAGS) -shared -fPIC -o $@ $<
+blast :
+suck :
+buffer.so :
+net.so :
 
