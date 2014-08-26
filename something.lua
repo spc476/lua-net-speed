@@ -26,7 +26,7 @@ end
 
 function main(packet)
   local max = #packet
-  for i = 1 , #packet do
+  for i = 1 , max do
     local c = packet:byte(i)
     counts[c] = counts[c] + 1
   end
